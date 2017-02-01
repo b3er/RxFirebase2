@@ -1,0 +1,27 @@
+ext {
+  // Build SDK versions
+  buildToolsVersion = '25.0.2'
+  kotlinVersion = '1.0.6'
+  minSdkVersion = 14
+  compileSdkVersion = 25
+
+  // CI
+  ci = 'true'.equals(System.getenv('CI'))
+
+  // Firebase Version
+  firebaseVersion = '10.0.1'
+
+  // Dependencies
+  assertj = 'org.assertj:assertj-core:1.2.0'
+  firebaseCommon = "com.google.firebase:firebase-common:${firebaseVersion}"
+  firebaseAuth = "com.google.firebase:firebase-auth:${firebaseVersion}"
+  firebaseCore = "com.google.firebase:firebase-core:${firebaseVersion}"
+  firebaseDatabase = "com.google.firebase:firebase-database:${firebaseVersion}"
+  firebaseStorage = "com.google.firebase:firebase-storage:${firebaseVersion}"
+  junit = 'junit:junit:4.12'
+  kotlin = "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
+  mockito = 'org.mockito:mockito-core:2.0.7-beta'
+  retroOptional = 'com.github.memoizr:retro-optional:0.2.0'
+  rxJava = 'io.reactivex.rxjava2:rxjava:2.0.5'
+  supportAnnotations = 'com.android.support:support-annotations:25.1.0'
+}

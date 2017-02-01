@@ -1,0 +1,4 @@
+include ':common'
+include ':firebase-auth', ':firebase-auth-kotlin'
+include ':firebase-database', 'firebase-database-kotlin'
+include ':firebase-storage', 'firebase-storage-kotlin'
