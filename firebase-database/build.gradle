@@ -1,3 +1,6 @@
+plugins {
+  id "com.github.b3er.local.properties" version "1.1"
+}
 apply plugin: 'com.android.library'
 
 android {
