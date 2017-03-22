@@ -68,3 +68,7 @@ inline fun DatabaseReference.rxRunTransaction(
 inline fun DatabaseReference.rxUpdateChildren(update: Map<String, Any?>)
     : Completable
     = RxFirebaseDatabase.updateChildren(this, update)
+
+inline fun DatabaseReference.rxRemove()
+    : Completable
+    = RxFirebaseDatabase.removeValue(this)
