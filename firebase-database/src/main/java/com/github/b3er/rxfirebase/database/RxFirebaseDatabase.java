@@ -33,7 +33,7 @@ public final class RxFirebaseDatabase {
   }
 
   /**
-   * @see DatabaseReference#addListenerForSingleValueEvent(ValueEventListener) (
+   * @see DatabaseReference#addListenerForSingleValueEvent(ValueEventListener)
    */
   @NonNull @CheckResult public static Single<DataSnapshot> data(@NonNull DatabaseReference ref) {
     return Single.create(new DataOnSubscribe(ref));

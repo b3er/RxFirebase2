@@ -2,6 +2,7 @@ package com.github.b3er.rxfirebase.auth;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -93,5 +94,37 @@ public final class RxFirebaseAuth {
    */
   @CheckResult @NonNull public static Completable signOut(@NonNull FirebaseAuth instance) {
     return Completable.create(new SignOutOnSubscribe(instance));
+  }
+
+  /**
+   * @see FirebaseAuth#applyActionCode(String)
+   */
+  @CheckResult @NonNull public static Completable applyActionCode(@NonNull FirebaseAuth instance,
+      @NonNull String code) {
+    return Completable.create(new ApplyActionCodeOnSubscribe(instance, code));
+  }
+
+  /**
+   * @see FirebaseAuth#checkActionCode(String)
+   */
+  @CheckResult @NonNull public static Single<ActionCodeResult> checkActionCode(
+      @NonNull FirebaseAuth instance, @NonNull String code) {
+    return Single.create(new CheckActionCodeOnSubscribe(instance, code));
+  }
+
+  /**
+   * @see FirebaseAuth#confirmPasswordReset(String, String)
+   */
+  @CheckResult @NonNull public static Completable confirmPasswordReset(
+      @NonNull FirebaseAuth instance, @NonNull String code, @NonNull String newPassword) {
+    return Completable.create(new ConfirmPasswordResetOnSubscribe(instance, code, newPassword));
+  }
+
+  /**
+   * @see FirebaseAuth#verifyPasswordResetCode(String)
+   */
+  @CheckResult @NonNull public static Single<String> verifyPasswordResetCode(
+      @NonNull FirebaseAuth instance, @NonNull String code) {
+    return Single.create(new VerifyPasswordResetCodeOnSubscribe(instance, code));
   }
 }

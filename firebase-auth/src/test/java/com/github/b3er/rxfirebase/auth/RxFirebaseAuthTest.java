@@ -2,6 +2,7 @@ package com.github.b3er.rxfirebase.auth;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,11 +33,19 @@ public class RxFirebaseAuthTest {
 
   @Mock Task<AuthResult> mockAuthResultTask;
 
+  @Mock ActionCodeResult mockActionCodeResult;
+
+  @Mock Task<ActionCodeResult> mockActionCodeResultTask;
+
+  @Mock Task<String> mockStringTask;
+
   @Mock Task<Void> mockSendPasswordResetEmailTask;
 
   @Mock Task<ProviderQueryResult> mockFetchProvidersTask;
 
   @Mock FirebaseUser mockFirebaseUser;
+
+  @Mock Task<Void> mockVoidTask;
 
   private ArgumentCaptor<OnCompleteListener> onComplete;
 
@@ -99,7 +108,7 @@ public class RxFirebaseAuthTest {
   @Test public void testCreateUserWithEmailAndPassword_NotSuccessful() {
     when(mockFirebaseUser.getEmail()).thenReturn("foo@bar.com");
 
-    mockNotSuccessfulResult(new IllegalStateException());
+    mockNotSuccessfulAuthResult(new IllegalStateException());
 
     when(mockFirebaseAuth.createUserWithEmailAndPassword("foo@bar.com", "password")).thenReturn(
         mockAuthResultTask);
@@ -288,7 +297,7 @@ public class RxFirebaseAuthTest {
   }
 
   @Test public void testSignInAnonymous_NotSuccessful() {
-    mockNotSuccessfulResult(new IllegalStateException());
+    mockNotSuccessfulAuthResult(new IllegalStateException());
 
     when(mockFirebaseAuth.signInAnonymously()).thenReturn(mockAuthResultTask);
 
@@ -327,7 +336,7 @@ public class RxFirebaseAuthTest {
   }
 
   @Test public void testSignInWithCredential_NotSuccessful() {
-    mockNotSuccessfulResult(new IllegalStateException());
+    mockNotSuccessfulAuthResult(new IllegalStateException());
 
     when(mockFirebaseAuth.signInWithCredential(mockAuthCredential)).thenReturn(mockAuthResultTask);
 
@@ -366,7 +375,7 @@ public class RxFirebaseAuthTest {
   }
 
   @Test public void testSignInWithCustomToken_NotSuccessful() {
-    mockNotSuccessfulResult(new IllegalStateException());
+    mockNotSuccessfulAuthResult(new IllegalStateException());
 
     when(mockFirebaseAuth.signInWithCustomToken("custom_token")).thenReturn(mockAuthResultTask);
 
@@ -406,7 +415,7 @@ public class RxFirebaseAuthTest {
   }
 
   @Test public void testSignInWithEmailAndPassword_NotSuccessful() {
-    mockNotSuccessfulResult(new IllegalStateException());
+    mockNotSuccessfulAuthResult(new IllegalStateException());
 
     when(mockFirebaseAuth.signInWithEmailAndPassword("email", "password")).thenReturn(
         mockAuthResultTask);
@@ -438,62 +447,216 @@ public class RxFirebaseAuthTest {
     obs.assertComplete();
   }
 
-  private void mockSuccessfulAuthResult() {
-    when(mockAuthResult.getUser()).thenReturn(mockFirebaseUser);
+  @Test public void testApplyActionCode() {
+    TestObserver obs = TestObserver.create();
+    mockSuccessfulResultForTask(mockVoidTask);
 
-    when(mockAuthResultTask.isSuccessful()).thenReturn(true);
+    when(mockFirebaseAuth.applyActionCode("code")).thenReturn(mockVoidTask);
+    RxFirebaseAuth.applyActionCode(mockFirebaseAuth, "code").subscribe(obs);
 
-    when(mockAuthResultTask.getResult()).thenReturn(mockAuthResult);
+    verify(mockFirebaseAuth).applyActionCode("code");
 
-    //noinspection unchecked
-    when(mockAuthResultTask.addOnCompleteListener(onComplete.capture())).thenReturn(
-        mockAuthResultTask);
+    callOnComplete(mockVoidTask);
+
+    obs.dispose();
+
+    obs.assertNoErrors();
+    obs.assertComplete();
   }
 
-  private void mockNotSuccessfulResult(Exception exception) {
-    when(mockAuthResultTask.isSuccessful()).thenReturn(false);
+  @Test public void testApplyActionCode_NotSuccessful() {
+    TestObserver obs = TestObserver.create();
+    mockNotSuccessfulResultForTask(mockVoidTask, new IllegalStateException());
 
-    when(mockAuthResultTask.getException()).thenReturn(exception);
+    when(mockFirebaseAuth.applyActionCode("code")).thenReturn(mockVoidTask);
+    RxFirebaseAuth.applyActionCode(mockFirebaseAuth, "code").subscribe(obs);
 
+    verify(mockFirebaseAuth).applyActionCode("code");
+
+    callOnComplete(mockVoidTask);
+
+    obs.dispose();
+
+    // Ensure no more values are emitted after unsubscribe
+    callOnComplete(mockVoidTask);
+
+    obs.assertError(IllegalStateException.class);
+    obs.assertNoValues();
+  }
+
+  @Test public void testCheckActionCode() {
+    when(mockActionCodeResult.getOperation()).thenReturn(ActionCodeResult.VERIFY_EMAIL);
+    when(mockActionCodeResult.getData(ActionCodeResult.EMAIL)).thenReturn("user@example.com");
+
+    mockSuccessfulResultForTask(mockActionCodeResultTask, mockActionCodeResult);
+
+    when(mockFirebaseAuth.checkActionCode("code")).thenReturn(mockActionCodeResultTask);
+
+    TestObserver<ActionCodeResult> obs = TestObserver.create();
+
+    RxFirebaseAuth.checkActionCode(mockFirebaseAuth, "code").subscribe(obs);
+
+    callOnComplete(mockActionCodeResultTask);
+    obs.dispose();
+
+    // Ensure no more values are emitted after unsubscribe
+    callOnComplete(mockActionCodeResultTask);
+
+    obs.assertNoErrors();
+    obs.assertComplete();
+    obs.assertValueCount(1);
+    obs.assertValue(new Predicate<ActionCodeResult>() {
+      @Override public boolean test(ActionCodeResult result) throws Exception {
+        return result.getOperation() == ActionCodeResult.VERIFY_EMAIL && "user@example.com".equals(
+            result.getData(ActionCodeResult.EMAIL));
+      }
+    });
+  }
+
+  @Test public void testCheckActionCode_NotSuccessful() {
+    mockNotSuccessfulResultForTask(mockActionCodeResultTask, new IllegalStateException());
+
+    when(mockFirebaseAuth.checkActionCode("code")).thenReturn(mockActionCodeResultTask);
+
+    TestObserver<ActionCodeResult> obs = TestObserver.create();
+
+    RxFirebaseAuth.checkActionCode(mockFirebaseAuth, "code").subscribe(obs);
+
+    callOnComplete(mockActionCodeResultTask);
+    obs.dispose();
+
+    // Ensure no more values are emitted after unsubscribe
+    callOnComplete(mockActionCodeResultTask);
+
+    obs.assertError(IllegalStateException.class);
+    obs.assertNoValues();
+  }
+
+  @Test public void testConfirmPasswordReset() {
+    TestObserver obs = TestObserver.create();
+    mockSuccessfulResultForTask(mockVoidTask);
+
+    when(mockFirebaseAuth.confirmPasswordReset("code", "password")).thenReturn(mockVoidTask);
+    RxFirebaseAuth.confirmPasswordReset(mockFirebaseAuth, "code", "password").subscribe(obs);
+
+    verify(mockFirebaseAuth).confirmPasswordReset("code", "password");
+
+    callOnComplete(mockVoidTask);
+
+    obs.dispose();
+
+    obs.assertNoErrors();
+    obs.assertComplete();
+  }
+
+  @Test public void testConfirmPasswordReset_NotSuccessful() {
+    TestObserver obs = TestObserver.create();
+    mockNotSuccessfulResultForTask(mockVoidTask, new IllegalStateException());
+
+    when(mockFirebaseAuth.confirmPasswordReset("code", "password")).thenReturn(mockVoidTask);
+    RxFirebaseAuth.confirmPasswordReset(mockFirebaseAuth, "code", "password").subscribe(obs);
+
+    verify(mockFirebaseAuth).confirmPasswordReset("code", "password");
+
+    callOnComplete(mockVoidTask);
+
+    obs.dispose();
+
+    // Ensure no more values are emitted after unsubscribe
+    callOnComplete(mockVoidTask);
+
+    obs.assertError(IllegalStateException.class);
+    obs.assertNoValues();
+  }
+
+  @Test public void testVerifyPasswordResetCode() {
+
+    mockSuccessfulResultForTask(mockStringTask, "user@example.com");
+
+    when(mockFirebaseAuth.verifyPasswordResetCode("code")).thenReturn(mockStringTask);
+
+    TestObserver<String> obs = TestObserver.create();
+
+    RxFirebaseAuth.verifyPasswordResetCode(mockFirebaseAuth, "code").subscribe(obs);
+
+    callOnComplete(mockStringTask);
+    obs.dispose();
+
+    // Ensure no more values are emitted after unsubscribe
+    callOnComplete(mockStringTask);
+
+    obs.assertNoErrors();
+    obs.assertComplete();
+    obs.assertValueCount(1);
+    obs.assertValue(new Predicate<String>() {
+      @Override public boolean test(String result) throws Exception {
+        return "user@example.com".equals(result);
+      }
+    });
+  }
+
+  @Test public void testVerifyPasswordResetCode_NotSuccessful() {
+    mockNotSuccessfulResultForTask(mockStringTask, new IllegalStateException());
+
+    when(mockFirebaseAuth.verifyPasswordResetCode("code")).thenReturn(mockStringTask);
+
+    TestObserver<String> obs = TestObserver.create();
+
+    RxFirebaseAuth.verifyPasswordResetCode(mockFirebaseAuth, "code").subscribe(obs);
+
+    callOnComplete(mockStringTask);
+    obs.dispose();
+
+    // Ensure no more values are emitted after unsubscribe
+    callOnComplete(mockStringTask);
+
+    obs.assertError(IllegalStateException.class);
+    obs.assertNoValues();
+  }
+
+  private <T> void mockSuccessfulResultForTask(Task<T> task, T result) {
+    when(task.getResult()).thenReturn(result);
+    mockSuccessfulResultForTask(task);
+  }
+
+  private void mockSuccessfulResultForTask(Task task) {
+    when(task.isSuccessful()).thenReturn(true);
     //noinspection unchecked
-    when(mockAuthResultTask.addOnCompleteListener(onComplete.capture())).thenReturn(
-        mockAuthResultTask);
+    when(task.addOnCompleteListener(onComplete.capture())).thenReturn(task);
+  }
+
+  private void mockNotSuccessfulResultForTask(Task task, Exception exception) {
+    when(task.isSuccessful()).thenReturn(false);
+
+    when(task.getResult()).thenReturn(null);
+
+    when(task.getException()).thenReturn(exception);
+  }
+
+  private void mockSuccessfulAuthResult() {
+    when(mockAuthResult.getUser()).thenReturn(mockFirebaseUser);
+    mockSuccessfulResultForTask(mockAuthResultTask, mockAuthResult);
+  }
+
+  private void mockNotSuccessfulAuthResult(Exception exception) {
+    mockNotSuccessfulResultForTask(mockAuthResultTask, exception);
+    //noinspection unchecked
   }
 
   private void mockSuccessfulSendPasswordResetEmailResult() {
-    when(mockSendPasswordResetEmailTask.isSuccessful()).thenReturn(true);
-
-    //noinspection unchecked
-    when(mockSendPasswordResetEmailTask.addOnCompleteListener(onComplete.capture())).thenReturn(
-        mockSendPasswordResetEmailTask);
+    mockSuccessfulResultForTask(mockSendPasswordResetEmailTask);
   }
 
   private void mockNotSuccessfulSendPasswordResetEmailResult(Exception exception) {
-    when(mockSendPasswordResetEmailTask.isSuccessful()).thenReturn(false);
-
-    when(mockSendPasswordResetEmailTask.getException()).thenReturn(exception);
-
-    //noinspection unchecked
-    when(mockSendPasswordResetEmailTask.addOnCompleteListener(onComplete.capture())).thenReturn(
-        mockSendPasswordResetEmailTask);
+    mockNotSuccessfulResultForTask(mockSendPasswordResetEmailTask, exception);
   }
 
   private void mockSuccessfulFetchProvidersResult() {
-    when(mockFetchProvidersTask.isSuccessful()).thenReturn(true);
-
-    //noinspection unchecked
-    when(mockFetchProvidersTask.addOnCompleteListener(onComplete.capture())).thenReturn(
-        mockFetchProvidersTask);
+    mockSuccessfulResultForTask(mockFetchProvidersTask);
   }
 
   private void mockNotSuccessfulFetchProvidersResult(Exception exception) {
-    when(mockFetchProvidersTask.isSuccessful()).thenReturn(false);
-
-    when(mockFetchProvidersTask.getException()).thenReturn(exception);
-
-    //noinspection unchecked
-    when(mockFetchProvidersTask.addOnCompleteListener(onComplete.capture())).thenReturn(
-        mockFetchProvidersTask);
+    mockNotSuccessfulResultForTask(mockFetchProvidersTask, exception);
   }
 
   @SuppressWarnings("unchecked") private void callOnComplete(Task<?> task) {

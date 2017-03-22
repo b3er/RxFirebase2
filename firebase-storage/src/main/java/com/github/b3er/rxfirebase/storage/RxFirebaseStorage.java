@@ -136,4 +136,12 @@ public final class RxFirebaseStorage {
       @NonNull InputStream inputStream, @NonNull StorageMetadata storageMetadata) {
     return Single.create(new PutStreamWithMetadataOnSubscribe(ref, inputStream, storageMetadata));
   }
+
+  /**
+   * @see StorageReference#updateMetadata(StorageMetadata)
+   */
+  public static Single<StorageMetadata> updateMetadata(@NonNull StorageReference ref,
+      @NonNull StorageMetadata storageMetadata) {
+    return Single.create(new UpdateMetadataOnSubscribe(ref, storageMetadata));
+  }
 }

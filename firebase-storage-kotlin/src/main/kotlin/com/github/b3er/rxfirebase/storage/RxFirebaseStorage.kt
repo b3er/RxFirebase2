@@ -74,3 +74,7 @@ inline fun StorageReference.putStream(inputStream: InputStream)
 inline fun StorageReference.putStream(inputStream: InputStream, storageMetadata: StorageMetadata)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putStream(this, inputStream, storageMetadata)
+
+inline fun StorageReference.updateMetadata(storageMetadata: StorageMetadata)
+    : Single<StorageMetadata>
+    = RxFirebaseStorage.updateMetadata(this, storageMetadata)

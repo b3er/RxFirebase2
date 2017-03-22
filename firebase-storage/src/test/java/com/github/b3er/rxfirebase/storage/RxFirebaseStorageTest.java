@@ -736,6 +736,51 @@ public class RxFirebaseStorageTest {
     obs.assertNoValues();
   }
 
+  @Test public void testUpdateMetadata() {
+    when(mockStorageMetadata.getName()).thenReturn("metadata");
+    mockSuccessfulResultForTask(mockStorageMetadataTask, mockStorageMetadata);
+
+    TestObserver<StorageMetadata> obs = TestObserver.create();
+    when(mockStorageReference.updateMetadata(mockStorageMetadata)).thenReturn(
+        mockStorageMetadataTask);
+
+    RxFirebaseStorage.updateMetadata(mockStorageReference, mockStorageMetadata).subscribe(obs);
+
+    verifyAddOnCompleteListenerForTask(mockStorageMetadataTask);
+
+    callOnComplete(mockStorageMetadataTask);
+    obs.dispose();
+
+    callOnComplete(mockStorageMetadataTask);
+
+    obs.assertNoErrors();
+    obs.assertComplete();
+    obs.assertValue(new Predicate<StorageMetadata>() {
+      @Override public boolean test(StorageMetadata metadata) throws Exception {
+        return "metadata".equals(metadata.getName());
+      }
+    });
+  }
+
+  @Test public void testUpdateMetadata_notSuccessful() {
+    mockNotSuccessfulResultForTask(mockStorageMetadataTask, new IllegalStateException());
+
+    TestObserver<StorageMetadata> obs = TestObserver.create();
+    when(mockStorageReference.updateMetadata(mockStorageMetadata)).thenReturn(
+        mockStorageMetadataTask);
+    RxFirebaseStorage.updateMetadata(mockStorageReference, mockStorageMetadata).subscribe(obs);
+
+    verifyAddOnCompleteListenerForTask(mockStorageMetadataTask);
+
+    callOnComplete(mockStorageMetadataTask);
+    obs.dispose();
+
+    callOnComplete(mockStorageMetadataTask);
+
+    obs.assertError(IllegalStateException.class);
+    obs.assertNoValues();
+  }
+
   private <T> void mockSuccessfulResultForTask(Task<T> task, T result) {
     when(task.getResult()).thenReturn(result);
     mockSuccessfulResultForTask(task);
