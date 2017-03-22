@@ -1,5 +1,8 @@
 # Change Log
-## Version 10.21.0 *(2017/02/03)*
+## Version 10.21.1 *(2017/03/22)*
+Added rxRemove() in firebase-database-kotlin
+
+## Version 10.21.0 *(2017/03/22)*
 Updated firebase version to 10.2.1
 
 Updated kotlin version to 1.1.1
