@@ -2,11 +2,10 @@ package com.github.b3er.rxfirebase.auth;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.memoizrlabs.retrooptional.Optional;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
+import io.reactivex.MaybeEmitter;
+import io.reactivex.MaybeOnSubscribe;
 
-final class GetCurrentUserOnSubscribe implements SingleOnSubscribe<Optional<FirebaseUser>> {
+final class GetCurrentUserOnSubscribe implements MaybeOnSubscribe<FirebaseUser> {
 
   private FirebaseAuth instance;
 
@@ -14,9 +13,14 @@ final class GetCurrentUserOnSubscribe implements SingleOnSubscribe<Optional<Fire
     this.instance = instance;
   }
 
-  @Override public void subscribe(SingleEmitter<Optional<FirebaseUser>> emitter) {
+  @Override public void subscribe(MaybeEmitter<FirebaseUser> emitter) {
     if (!emitter.isDisposed()) {
-      emitter.onSuccess(Optional.of(instance.getCurrentUser()));
+      FirebaseUser currentUser = instance.getCurrentUser();
+      if (currentUser != null) {
+        emitter.onSuccess(currentUser);
+      } else {
+        emitter.onComplete();
+      }
     }
   }
 }

@@ -6,8 +6,8 @@ import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.memoizrlabs.retrooptional.Optional;
 import io.reactivex.Completable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import java.util.List;
@@ -36,17 +36,17 @@ public final class RxFirebaseAuth {
   /**
    * @see FirebaseAuth#fetchProvidersForEmail(String)
    */
-  @CheckResult @NonNull public static Single<Optional<List<String>>> fetchProvidersForEmail(
+  @CheckResult @NonNull public static Maybe<List<String>> fetchProvidersForEmail(
       @NonNull FirebaseAuth instance, @NonNull String email) {
-    return Single.create(new FetchProvidersForEmailOnSubscribe(instance, email));
+    return Maybe.create(new FetchProvidersForEmailOnSubscribe(instance, email));
   }
 
   /**
    * @see FirebaseAuth#getCurrentUser()
    */
-  @CheckResult @NonNull public static Single<Optional<FirebaseUser>> getCurrentUser(
+  @CheckResult @NonNull public static Maybe<FirebaseUser> getCurrentUser(
       @NonNull final FirebaseAuth instance) {
-    return Single.create(new GetCurrentUserOnSubscribe(instance));
+    return Maybe.create(new GetCurrentUserOnSubscribe(instance));
   }
 
   /**

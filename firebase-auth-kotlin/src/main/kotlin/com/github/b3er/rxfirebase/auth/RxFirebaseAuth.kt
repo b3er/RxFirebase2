@@ -6,8 +6,8 @@ import com.google.firebase.auth.ActionCodeResult
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.memoizrlabs.retrooptional.Optional
 import io.reactivex.Completable
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -20,12 +20,11 @@ inline fun FirebaseAuth.rxCreateUserWithEmailAndPassword(email: String, password
     = RxFirebaseAuth.createUserWithEmailAndPassword(this, email, password)
 
 inline fun FirebaseAuth.rxFetchProvidersForEmail(email: String)
-    : Single<List<String>>
+    : Maybe<List<String>>
     = RxFirebaseAuth.fetchProvidersForEmail(this, email)
-    .map { if (it.isPresent) it.get() else emptyList() }
 
 inline fun FirebaseAuth.rxGetCurrentUser()
-    : Single<Optional<FirebaseUser>>
+    : Maybe<FirebaseUser>
     = RxFirebaseAuth.getCurrentUser(this)
 
 inline fun FirebaseAuth.rxSendPasswordResetEmail(email: String)

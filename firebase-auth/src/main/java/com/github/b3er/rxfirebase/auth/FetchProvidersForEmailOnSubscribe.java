@@ -5,13 +5,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.ProviderQueryResult;
-import com.memoizrlabs.retrooptional.Function1;
-import com.memoizrlabs.retrooptional.Optional;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
+import io.reactivex.MaybeEmitter;
+import io.reactivex.MaybeOnSubscribe;
 import java.util.List;
 
-final class FetchProvidersForEmailOnSubscribe implements SingleOnSubscribe<Optional<List<String>>> {
+final class FetchProvidersForEmailOnSubscribe implements MaybeOnSubscribe<List<String>> {
 
   private final FirebaseAuth instance;
 
@@ -22,7 +20,7 @@ final class FetchProvidersForEmailOnSubscribe implements SingleOnSubscribe<Optio
     this.email = email;
   }
 
-  @Override public void subscribe(final SingleEmitter<Optional<List<String>>> emitter) {
+  @Override public void subscribe(final MaybeEmitter<List<String>> emitter) {
 
     final OnCompleteListener<ProviderQueryResult> listener =
         new OnCompleteListener<ProviderQueryResult>() {
@@ -35,12 +33,15 @@ final class FetchProvidersForEmailOnSubscribe implements SingleOnSubscribe<Optio
             }
 
             if (!emitter.isDisposed()) {
-              emitter.onSuccess(Optional.of(task.getResult())
-                  .map(new Function1<ProviderQueryResult, List<String>>() {
-                    @Override public List<String> apply(ProviderQueryResult r) {
-                      return r.getProviders();
-                    }
-                  }));
+              ProviderQueryResult result = task.getResult();
+              if (result != null) {
+                List<String> providers = result.getProviders();
+                if (providers != null) {
+                  emitter.onSuccess(providers);
+                  return;
+                }
+              }
+              emitter.onComplete();
             }
           }
         };
