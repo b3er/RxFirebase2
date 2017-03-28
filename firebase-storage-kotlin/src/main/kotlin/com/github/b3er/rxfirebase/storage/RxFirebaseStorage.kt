@@ -14,67 +14,67 @@ import io.reactivex.Single
 import java.io.File
 import java.io.InputStream
 
-inline fun StorageReference.getBytes(maxDownloadSizeBytes: Long)
+inline fun StorageReference.rxGetBytes(maxDownloadSizeBytes: Long)
     : Single<ByteArray>
     = RxFirebaseStorage.getBytes(this, maxDownloadSizeBytes)
 
-inline fun StorageReference.delete()
+inline fun StorageReference.rxDelete()
     : Completable
     = RxFirebaseStorage.delete(this)
 
-inline fun StorageReference.getFile(uri: Uri)
+inline fun StorageReference.rxGetFile(uri: Uri)
     : Single<FileDownloadTask.TaskSnapshot>
     = RxFirebaseStorage.getFile(this, uri)
 
-inline fun StorageReference.getFile(file: File)
+inline fun StorageReference.rxGetFile(file: File)
     : Single<FileDownloadTask.TaskSnapshot>
     = RxFirebaseStorage.getFile(this, file)
 
-inline fun StorageReference.getMetadata()
+inline fun StorageReference.rxGetMetadata()
     : Single<StorageMetadata>
     = RxFirebaseStorage.getMetadata(this)
 
-inline fun StorageReference.getStream()
+inline fun StorageReference.rxGetStream()
     : Single<StreamDownloadTask.TaskSnapshot>
     = RxFirebaseStorage.getStream(this)
 
-inline fun StorageReference.getStream(streamProcessor: StreamProcessor)
+inline fun StorageReference.rxGetStream(streamProcessor: StreamProcessor)
     : Single<StreamDownloadTask.TaskSnapshot>
     = RxFirebaseStorage.getStream(this, streamProcessor)
 
-inline fun StorageReference.getDownloadUrl()
+inline fun StorageReference.rxGetDownloadUrl()
     : Single<Uri>
     = RxFirebaseStorage.getDownloadUrl(this)
 
-inline fun StorageReference.putBytes(bytes: ByteArray)
+inline fun StorageReference.rxPutBytes(bytes: ByteArray)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putBytes(this, bytes)
 
-inline fun StorageReference.putBytes(bytes: ByteArray, storageMetadata: StorageMetadata)
+inline fun StorageReference.rxPutBytes(bytes: ByteArray, storageMetadata: StorageMetadata)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putBytes(this, bytes, storageMetadata)
 
-inline fun StorageReference.putFile(uri: Uri)
+inline fun StorageReference.rxPutFile(uri: Uri)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putFile(this, uri)
 
-inline fun StorageReference.putFile(uri: Uri, storageMetadata: StorageMetadata)
+inline fun StorageReference.rxPutFile(uri: Uri, storageMetadata: StorageMetadata)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putFile(this, uri, storageMetadata)
 
-inline fun StorageReference.putFile(uri: Uri, storageMetadata: StorageMetadata,
+inline fun StorageReference.rxPutFile(uri: Uri, storageMetadata: StorageMetadata,
     existingUploadUri: Uri)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putFile(this, uri, storageMetadata, existingUploadUri)
 
-inline fun StorageReference.putStream(inputStream: InputStream)
+inline fun StorageReference.rxPutStream(inputStream: InputStream)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putStream(this, inputStream)
 
-inline fun StorageReference.putStream(inputStream: InputStream, storageMetadata: StorageMetadata)
+inline fun StorageReference.rxPutStream(inputStream: InputStream, storageMetadata: StorageMetadata)
     : Single<UploadTask.TaskSnapshot>
     = RxFirebaseStorage.putStream(this, inputStream, storageMetadata)
 
-inline fun StorageReference.updateMetadata(storageMetadata: StorageMetadata)
+inline fun StorageReference.rxUpdateMetadata(storageMetadata: StorageMetadata)
     : Single<StorageMetadata>
     = RxFirebaseStorage.updateMetadata(this, storageMetadata)
