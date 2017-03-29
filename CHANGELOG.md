@@ -1,4 +1,9 @@
 # Change Log
+## Version 10.21.2 *(2017/03/29)*
+* Updated kotlin and android plugins version
+* Added rx prefix to kotlin extension functions in storage
+* Changed `Single<Optional<...>>` to `Maybe<...>` in auth
+
 ## Version 10.21.1 *(2017/03/22)*
 Added rxRemove() in firebase-database-kotlin
 
