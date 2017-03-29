@@ -1,12 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
   repositories {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.2.0'
-    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.6'
+    classpath 'com.android.tools.build:gradle:2.3.0'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.1"
     classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
   }
 }
@@ -121,5 +120,6 @@ task mergeCoverageReport(type: JacocoReport) {
     html.enabled = true
   }
 }
-
 apply from: file('dependencies.gradle')
+
+
