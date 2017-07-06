@@ -1,4 +1,7 @@
 # Change Log
+## Version 11.2.0 *(2017/07/06)*
+* Updated firebase version to 11.0.2
+* Updated kotlin to 1.1.2
 ## Version 10.21.2 *(2017/03/29)*
 * Updated kotlin and android plugins version
 * Added rx prefix to kotlin extension functions in storage

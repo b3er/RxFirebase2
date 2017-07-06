@@ -14,7 +14,7 @@
    RxJava binding APIs for [Firebase Authentication](https://firebase.google.com/docs/auth/).
    
    ```groovy
-   compile ('com.github.b3er.rxfirebase:firebase-auth:10.21.2') {
+   compile ('com.github.b3er.rxfirebase:firebase-auth:11.2.0') {
        transitive = false
    }
    ```
@@ -24,7 +24,7 @@
    Kotlin support module for `firebase-auth`.
    
    ```groovy
-   compile ('com.github.b3er.rxfirebase:firebase-auth-kotlin:10.21.2') {
+   compile ('com.github.b3er.rxfirebase:firebase-auth-kotlin:11.2.0') {
        transitive = false
    }
    ```
@@ -34,7 +34,7 @@
    RxJava binding APIs for [Firebase Realtime Database](https://firebase.google.com/docs/database/) Android SDK.
    
    ```groovy
-   compile ('com.github.b3er.rxfirebase:firebase-database:10.21.2') {
+   compile ('com.github.b3er.rxfirebase:firebase-database:11.2.0') {
        transitive = false
    }
    ```
@@ -44,7 +44,7 @@
    Kotlin support module for `firebase-database`
    
    ```groovy
-   compile ('com.github.b3er.rxfirebase:firebase-database-kotlin:10.21.2') {
+   compile ('com.github.b3er.rxfirebase:firebase-database-kotlin:11.2.0') {
        transitive = false
    }
    ```
@@ -54,7 +54,7 @@
    RxJava binding APIs for [Firebase Storage](https://firebase.google.com/docs/storage/) Android SDK.
    
    ```groovy
-   compile ('com.github.b3er.rxfirebase:firebase-storage:10.21.2') {
+   compile ('com.github.b3er.rxfirebase:firebase-storage:11.2.0') {
        transitive = false
    }
    ```
@@ -64,7 +64,7 @@
    Kotlin support module for `firebase-storage`
    
    ```groovy
-   compile ('com.github.b3er.rxfirebase:firebase-storage-kotlin:10.21.2') {
+   compile ('com.github.b3er.rxfirebase:firebase-storage-kotlin:11.2.0') {
        transitive = false
    }
    ```
